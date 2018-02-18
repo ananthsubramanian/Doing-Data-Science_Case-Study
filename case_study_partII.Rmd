@@ -1,0 +1,44 @@
+---
+title: "case_study_partI"
+author: "Ananth Subramanian"
+date: "February 18, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+The code below addresses the requirement of getting the information on the number of NAs in the merged data and also to calculate ABV and IBU total with respect to each state and report which state has the highest ABV and IBU. Before calculating the total with respect to each state, the NAs are dropped.
+
+```{r case study}
+NA_in_ABV <- sum(is.na(beer_breweries_merge$ABV))
+NA_in_IBU <- sum(is.na(beer_breweries_merge$IBU))
+print(NA_in_ABV)
+print(NA_in_IBU)
+colnames(beer_breweries_merged_table)<- c("Brew_ID","Breweries_Name","City","State","Beer_Brand","Beer_ID","ABV","IBU","Style","Ounces")
+beer_breweries_merged_table_no_NAs <- beer_breweries_merge[!rowSums((is.na(beer_breweries_merge))),]
+beer_breweries_merged_table_no_NAs_abv_total <- as.data.table(beer_breweries_merged_table_no_NAs)
+class(beer_breweries_merged_table_no_NAs)
+beer_breweries_merged_table_no_NAs_abv_total <- beer_breweries_merged_table_no_NAs_abv_total[,sum(ABV), by ="State"]
+colnames(beer_breweries_merged_table_no_NAs_abv_total) <- c("State","ABV")
+beer_breweries_merged_table_no_NAs_abv_total <- beer_breweries_merged_table_no_NAs_abv_total[order(beer_breweries_merged_table_no_NAs_abv_total$ABV, decreasing = TRUE)]
+View(beer_breweries_merged_table_no_NAs_abv_total)
+beer_breweries_merged_table_no_NAs_ibu_total <- as.data.table(beer_breweries_merged_table_no_NAs)
+beer_breweries_merged_table_no_NAs_ibu_total <- beer_breweries_merged_table_no_NAs_ibu_total[,sum(IBU), by ="State"]
+colnames(beer_breweries_merged_table_no_NAs_ibu_total) <- c("State","IBU")
+beer_breweries_merged_table_no_NAs_ibu_total <- beer_breweries_merged_table_no_NAs_ibu_total[order(beer_breweries_merged_table_no_NAs_ibu_total$IBU, decreasing = TRUE)]
+View(beer_breweries_merged_table_no_NAs_ibu_total)
+```
+
+## Including Plots
+
+
+
+```{r pressure, echo=FALSE}
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

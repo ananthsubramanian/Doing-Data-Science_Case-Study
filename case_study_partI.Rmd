@@ -1,0 +1,36 @@
+---
+title: "case_study_partI"
+author: "Ananth Subramanian"
+date: "February 18, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+The code below addresses the requirement of reading the files beer and breweries data and then merging them. The Brewery ID has been used as a Key while merging; In the eer data "Brewery_ID" has been renamed "Brew_ID" to match the brewery data. The resulting data is then transformed to a table to facilitate totalling and then reporting the highest IBU and ABV details based on the state
+
+```{r case study}
+getwd()
+breweries_data <- read.csv(paste(getwd(),"Breweries.csv",sep ="/"))
+View(breweries_data)
+beer_data <- read.csv(paste(getwd(),"Beer.csv",sep ="/"))
+View(beer_data)
+beer_breweries_merge <- merge(breweries_data,beer_data, by = "Brew_ID")
+View(beer_breweries_merge)
+library(data.table)
+beer_breweries_merged_table <- as.data.table(beer_breweries_merge)
+```
+
+## Including Plots
+
+
+
+```{r pressure, echo=FALSE}
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
