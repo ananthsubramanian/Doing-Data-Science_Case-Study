@@ -11,18 +11,30 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 
-The code below addresses the requirement of reading the files beer and breweries data and then merging them. The Brewery ID has been used as a Key while merging; In the eer data "Brewery_ID" has been renamed "Brew_ID" to match the brewery data. The resulting data is then transformed to a table to facilitate totalling and then reporting the highest IBU and ABV details based on the state
+The code below addresses the requirement of reading the files beer and breweries data and then merging them.Before merging, function distinct is used to remove the duplicates. The Brewery ID has been used as a Key while merging; In the beer data "Brewery_ID" has been renamed "Brew_ID" to match the brewery data. The resulting data is then transformed to a table to facilitate totalling and then reporting the highest IBU and ABV details based on the state
 
 ```{r case study}
 getwd()
 breweries_data <- read.csv(paste(getwd(),"Breweries.csv",sep ="/"))
 View(breweries_data)
+library(dplyr)
+breweries_data_unique <- distinct(breweries_data,Name,Brew_ID,City,State)
+breweries_total <- table(breweries_data_unique$State)
+breweries_total_by_state <- as.data.frame(breweries_total)
+colnames(breweries_total_by_state) <- c("State","# of Breweries")
+View(breweries_total_by_state)
+write.csv(breweries_total_by_state,"Breweries_total_by_state.csv")
 beer_data <- read.csv(paste(getwd(),"Beer.csv",sep ="/"))
 View(beer_data)
-beer_breweries_merge <- merge(breweries_data,beer_data, by = "Brew_ID")
+beer_data_unique <- distinct(beer_data,Name,Beer_ID,Brew_ID,ABV,IBU,Style,Ounces)
+View(beer_data_unique)
+beer_breweries_merge <- merge(breweries_data_unique,beer_data_unique, by ="Brew_ID")
 View(beer_breweries_merge)
+head(beer_breweries_merge,6)
+tail(beer_breweries_merge,6)
 library(data.table)
 beer_breweries_merged_table <- as.data.table(beer_breweries_merge)
+summary(beer_breweries_merge)
 ```
 
 ## Including Plots
