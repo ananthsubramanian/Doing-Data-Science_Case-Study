@@ -20,6 +20,7 @@ print(NA_in_ABV)
 print(NA_in_IBU)
 colnames(beer_breweries_merged_table)<- c("Brew_ID","Breweries_Name","City","State","Beer_Brand","Beer_ID","ABV","IBU","Style","Ounces")
 beer_breweries_merged_table_no_NAs <- beer_breweries_merge[!rowSums((is.na(beer_breweries_merge))),]
+summary(beer_breweries_merged_table_no_NAs$ABV)
 beer_breweries_merged_table_no_NAs_abv_total <- as.data.table(beer_breweries_merged_table_no_NAs)
 class(beer_breweries_merged_table_no_NAs)
 beer_breweries_merged_table_no_NAs_abv_total <- beer_breweries_merged_table_no_NAs_abv_total[,sum(ABV), by ="State"]
@@ -31,11 +32,26 @@ beer_breweries_merged_table_no_NAs_ibu_total <- beer_breweries_merged_table_no_N
 colnames(beer_breweries_merged_table_no_NAs_ibu_total) <- c("State","IBU")
 beer_breweries_merged_table_no_NAs_ibu_total <- beer_breweries_merged_table_no_NAs_ibu_total[order(beer_breweries_merged_table_no_NAs_ibu_total$IBU, decreasing = TRUE)]
 View(beer_breweries_merged_table_no_NAs_ibu_total)
+median.abv.per.state <- aggregate(beer_breweries_merged_table_no_NAs[,7], list(beer_breweries_merged_table_no_NAs$State),median)
+colnames(median.abv.per.state) <- c("State","Median ABV")
+View(median.abv.per.state)
+median.ibu.per.state <- aggregate(beer_breweries_merged_table_no_NAs[,8], list(beer_breweries_merged_table_no_NAs$State),median)
+colnames(median.ibu.per.state) <- c("State","Median IBU")
+View(median.ibu.per.state)
+median_ibu_abv_by_state <- merge(median.abv.per.state,median.ibu.per.state,by="State")
+View(median_ibu_abv_by_state)
+melted_data <- melt(median_ibu_abv_by_state,id.vars= "State", measure.vars = c("Median ABV","Median IBU"))
+colnames(melted_data) <- c("State","Beer_Parameter", "Value")
+View(melted_data)
+library(ggplot2)
+ggplot(melted_data, aes(x= State, y= Value)) + geom_bar(aes(fill = Beer_Parameter), position = "dodge", stat = "identity") + scale_y_log10() + theme(axis.text.x = element_text(angle = 90, hjust= 1.5))
+colnames(beer_breweries_merged_table_no_NAs) <- c("Brew_ID", "Brewery_Name", "City", "State", "Beer_Name", "Beer_ID","ABV","IBU","Style","Ounces")
+ggplot(beer_breweries_merged_table_no_NAs, aes(x=ABV, y = IBU)) + geom_point()+ geom_smooth(method = lm)
+cor.test(beer_breweries_merged_table_no_NAs$ABV, beer_breweries_merged_table_no_NAs$IBU)
+lm(beer_breweries_merged_table_no_NAs$ABV ~ beer_breweries_merged_table_no_NAs$IBU )
 ```
 
 ## Including Plots
-
-
 
 ```{r pressure, echo=FALSE}
 
